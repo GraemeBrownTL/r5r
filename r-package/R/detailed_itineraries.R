@@ -172,6 +172,7 @@ detailed_itineraries <- function(r5r_core,
                                  max_rides = 3,
                                  max_lts = 2,
                                  shortest_path = TRUE,
+                                 suboptimal_minutes = 5L,
                                  n_threads = Inf,
                                  verbose = TRUE,
                                  progress = TRUE,
@@ -269,11 +270,11 @@ detailed_itineraries <- function(r5r_core,
 
   # set suboptimal minutes
   # if only the shortest path is requested, set suboptimal minutes to 0 minutes,
-  # else revert back to the 5 minutes default.
+  # else use user parameter.
   if (shortest_path) {
     set_suboptimal_minutes(r5r_core, 0L)
   } else {
-    set_suboptimal_minutes(r5r_core, 5L)
+    set_suboptimal_minutes(r5r_core, suboptimal_minutes)
   }
 
   # set number of threads to be used by r5 and data.table
@@ -350,14 +351,14 @@ detailed_itineraries <- function(r5r_core,
     # itineraries with the same signature (sequence of routes) are filtered to
     # keep the one with the shortest duration
 
-    path_options[, temp_route := fifelse(route == "", mode, route)]
-    path_options[, temp_sign := paste(temp_route, collapse = "_"), by = .(fromId, toId, option)]
+    #path_options[, temp_route := fifelse(route == "", mode, route)]
+    #path_options[, temp_sign := paste(temp_route, collapse = "_"), by = .(fromId, toId, option)]
 
-    path_options <- path_options[path_options[, .I[total_duration == min(total_duration)],by = .(fromId, toId, temp_sign)]$V1]
-    path_options <- path_options[path_options[, .I[option == min(option)], by = .(fromId, toId, temp_sign)]$V1]
+    #path_options <- path_options[path_options[, .I[total_duration == min(total_duration)],by = .(fromId, toId, temp_sign)]$V1]
+    #path_options <- path_options[path_options[, .I[option == min(option)], by = .(fromId, toId, temp_sign)]$V1]
 
     # remove temporary columns
-    path_options[, grep("temp_", names(path_options), value = TRUE) := NULL]
+    #path_options[, grep("temp_", names(path_options), value = TRUE) := NULL]
 
   }
 
